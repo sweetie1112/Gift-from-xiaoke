@@ -10,11 +10,11 @@
 <meta name="theme-color" content="#F3F1F7">
 <title>窗边</title>
 <style>
-/* Layout: one-screen chat. Header / pegboard thread / composer; a left drawer holds the windows, a bottom sheet holds settings. */
+/* Layout: one-screen chat. Header / pegboard thread / composer; a left drawer holds the windows, bottom sheets hold settings and memory. */
 :root{
   --bg:#F3F1F7; --peg:rgba(92,80,150,.11); --surface:#FFFFFF; --surface-2:#F7F6FB;
   --ink:#24213A; --muted:#6C6786; --line:#E2DFEE;
-  --accent:#D25B25; --accent-ink:#FFFFFF; --mine:#FFDCC8; --mine-ink:#3A2116;
+  --accent:#D25B25; --accent-ink:#FFFFFF; --accent-soft:#FBE4D7; --mine:#FFDCC8; --mine-ink:#3A2116;
   --bead-1:#EE8FAD; --bead-2:#EFA155; --bead-3:#9A89DE;
   --danger:#C23B4A; --scrim:rgba(20,16,36,.38); --shadow:rgba(36,33,58,.14);
   --f-display:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC","Noto Serif CJK SC",serif;
@@ -26,7 +26,7 @@
   :root:not([data-theme="light"]){
     --bg:#17151F; --peg:rgba(255,255,255,.055); --surface:#221F2E; --surface-2:#1C1A27;
     --ink:#ECE9F6; --muted:#9E99B7; --line:#34304A;
-    --accent:#F08A52; --accent-ink:#1A0E07; --mine:#4B2B1F; --mine-ink:#FCE6DA;
+    --accent:#F08A52; --accent-ink:#1A0E07; --accent-soft:#3A2519; --mine:#4B2B1F; --mine-ink:#FCE6DA;
     --bead-1:#E07E9B; --bead-2:#E9944A; --bead-3:#8E7FD6;
     --danger:#F07482; --scrim:rgba(0,0,0,.55); --shadow:rgba(0,0,0,.4);
     color-scheme:dark;
@@ -35,7 +35,7 @@
 :root[data-theme="dark"]{
   --bg:#17151F; --peg:rgba(255,255,255,.055); --surface:#221F2E; --surface-2:#1C1A27;
   --ink:#ECE9F6; --muted:#9E99B7; --line:#34304A;
-  --accent:#F08A52; --accent-ink:#1A0E07; --mine:#4B2B1F; --mine-ink:#FCE6DA;
+  --accent:#F08A52; --accent-ink:#1A0E07; --accent-soft:#3A2519; --mine:#4B2B1F; --mine-ink:#FCE6DA;
   --bead-1:#E07E9B; --bead-2:#E9944A; --bead-3:#8E7FD6;
   --danger:#F07482; --scrim:rgba(0,0,0,.55); --shadow:rgba(0,0,0,.4);
   color-scheme:dark;
@@ -76,7 +76,7 @@ button{cursor:pointer}
 .msg{display:flex;flex-direction:column;gap:3px}
 .msg.user{align-items:flex-end}
 .msg.assistant{align-items:flex-start}
-.bubble{max-width:min(88%,640px);min-width:0;padding:10px 14px;border-radius:18px;overflow-wrap:anywhere}
+.bubble{max-width:min(88%,640px);min-width:0;padding:10px 14px;border-radius:18px;overflow-wrap:anywhere;display:flex;flex-direction:column;gap:8px}
 .msg.assistant .bubble{background:var(--surface);border:1px solid var(--line);border-top-left-radius:6px}
 .msg.user .bubble{background:var(--mine);color:var(--mine-ink);border-top-right-radius:6px}
 .msg.user .body{white-space:pre-wrap}
@@ -99,11 +99,37 @@ button{cursor:pointer}
 .code pre code{border:0;background:none;padding:0;font:inherit}
 .copy-code{border:0;background:transparent;color:var(--muted);font:12px var(--f-body);padding:3px 8px;border-radius:6px}
 .copy-code:hover{color:var(--ink);background:var(--surface)}
-.imgs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
-.imgs:last-child{margin-bottom:0}
+.imgs{display:flex;flex-wrap:wrap;gap:6px}
 .imgs img{display:block;max-width:min(220px,100%);max-height:260px;border-radius:12px;object-fit:cover}
-.err{margin-top:6px;font-size:13.5px;line-height:1.55;color:var(--danger)}
-.note{margin-top:6px;font-size:12px;color:var(--muted)}
+.err{font-size:13.5px;line-height:1.55;color:var(--danger);white-space:pre-wrap}
+.note{font-size:12px;color:var(--muted)}
+
+/* attached files */
+.files{display:flex;flex-wrap:wrap;gap:6px}
+.file{display:inline-flex;align-items:center;gap:7px;max-width:100%;min-width:0;padding:6px 10px 6px 7px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:13px;line-height:1.35}
+.msg.user .file{background:color-mix(in srgb,var(--surface) 70%,transparent);border-color:transparent}
+.file .kind{flex:none;font:700 9.5px/1 var(--f-mono);letter-spacing:.04em;padding:4px 5px;border-radius:5px;background:var(--bead-3);color:#fff}
+.file .kind.pdf{background:var(--danger)}
+.file .kind.doc{background:#4C7BD9}
+.file .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file .sz{flex:none;color:var(--muted);font:11px var(--f-mono)}
+.file .x{flex:none;border:0;background:transparent;color:var(--muted);padding:0 0 0 4px;font-size:15px;line-height:1}
+
+/* activity rows: memory tools, search, links */
+.acts{display:flex;flex-direction:column;gap:4px}
+.act-row{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.5;color:var(--muted)}
+.act-row .dot{flex:none;width:10px;height:10px;margin-top:4px;border-radius:50%;background:radial-gradient(circle,transparent 2px,var(--c,var(--bead-3)) 2.6px)}
+.act-row.mem .dot{--c:var(--bead-2)}
+.act-row.web .dot{--c:var(--bead-1)}
+.act-row.error{color:var(--danger)}
+.act-row.error .dot{--c:var(--danger)}
+.act-row.running .dot{animation:bob 1.2s ease-in-out infinite}
+.act-row .what{min-width:0;overflow-wrap:anywhere}
+.act-row .what b{font-weight:600;color:var(--ink)}
+.act-row.error .what b{color:inherit}
+.srcs{display:flex;flex-direction:column;gap:1px;margin:2px 0 2px 18px;font-size:12px}
+.srcs a{color:var(--muted);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.srcs a:hover{color:var(--accent);text-decoration:underline}
 
 .meta{display:flex;align-items:center;flex-wrap:wrap;gap:0 2px;font:11px/1.4 var(--f-mono);color:var(--muted);padding-inline:6px}
 .msg.user .meta{justify-content:flex-end}
@@ -114,13 +140,13 @@ button{cursor:pointer}
 .act.armed{color:var(--danger);background:var(--surface)}
 
 /* perler-bead loader */
-.beads{display:inline-flex;gap:6px;padding:5px 2px}
+.beads{display:inline-flex;gap:6px;padding:3px 2px}
 .beads i{width:11px;height:11px;border-radius:50%;background:radial-gradient(circle,transparent 2.2px,var(--c) 2.8px);animation:bob 1.2s ease-in-out infinite}
 .beads i:nth-child(1){--c:var(--bead-1)}
 .beads i:nth-child(2){--c:var(--bead-2);animation-delay:.15s}
 .beads i:nth-child(3){--c:var(--bead-3);animation-delay:.3s}
 @keyframes bob{0%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
-@media (prefers-reduced-motion:reduce){.beads i{animation:none}}
+@media (prefers-reduced-motion:reduce){.beads i,.act-row.running .dot{animation:none}}
 
 .empty{margin:auto;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;padding:28px 8px;color:var(--muted)}
 .empty .no{font:12px var(--f-mono);letter-spacing:.1em}
@@ -134,13 +160,15 @@ button{cursor:pointer}
   padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));
   background:var(--bg);border-top:1px solid var(--line)}
 .composer > *{max-width:760px;margin-inline:auto}
-.thumbs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px}
+.pending{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 8px;align-items:center}
 .thumb{position:relative;flex:none}
-.thumb img{display:block;width:64px;height:64px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+.thumb img{display:block;width:60px;height:60px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
 .thumb button{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:0;background:var(--ink);color:var(--bg);font-size:13px;line-height:22px;padding:0}
-.bar{display:flex;align-items:flex-end;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:4px}
+.pending .file{flex:none;max-width:220px}
+.bar{display:flex;align-items:flex-end;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:4px}
 .bar:focus-within{border-color:var(--accent)}
-.bar .icon-btn{width:40px;height:40px;color:var(--muted)}
+.bar .icon-btn{width:38px;height:40px;color:var(--muted)}
+.bar .icon-btn[aria-pressed="true"]{color:var(--accent);background:var(--accent-soft)}
 #input{flex:1;min-width:0;border:0;background:transparent;resize:none;outline:none;padding:8px 4px;max-height:168px;font-size:16px;line-height:1.45}
 #input::placeholder{color:var(--muted)}
 .send{flex:none;width:40px;height:40px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center}
@@ -159,8 +187,11 @@ button{cursor:pointer}
 @media (prefers-reduced-motion:reduce){.drawer{transition:none}}
 .brand{font:700 32px/1.2 var(--f-display);letter-spacing:.14em;padding-left:4px}
 .brand-sub{font-size:12.5px;color:var(--muted);padding-left:4px}
-.new-btn{margin:16px 0 10px;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px;border-radius:14px;border:1px dashed var(--accent);background:transparent;color:var(--accent);font-weight:600}
+.drawer-btns{display:flex;gap:8px;margin:16px 0 10px}
+.new-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;border-radius:14px;border:1px dashed var(--accent);background:transparent;color:var(--accent);font-weight:600;white-space:nowrap}
 .new-btn:hover{background:var(--surface-2)}
+.mem-btn{flex:none;display:flex;align-items:center;gap:6px;padding:11px 12px;border-radius:14px;border:1px solid var(--line);background:var(--surface-2);font-weight:600;white-space:nowrap}
+.mem-btn::before{content:"";width:10px;height:10px;border-radius:50%;background:radial-gradient(circle,transparent 2px,var(--bead-2) 2.6px)}
 .conv-list{list-style:none;margin:0 -4px 0 0;padding:0 4px 0 0;flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
 .conv{display:flex;align-items:center;gap:2px;border-radius:12px}
 .conv.active{background:var(--surface-2)}
@@ -189,7 +220,8 @@ button{cursor:pointer}
 .group-title{font:11px var(--f-mono);letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
 .field{display:flex;flex-direction:column;gap:6px;margin-top:12px}
 .lab{font-size:13.5px;font-weight:600}
-.hint{font-size:12px;color:var(--muted);line-height:1.55}
+.hint{font-size:12px;color:var(--muted);line-height:1.6}
+.hint ol{margin:4px 0 0;padding-left:1.3em}
 .inp{width:100%;min-width:0;font-size:16px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink)}
 .inp:focus{outline:none;border-color:var(--accent)}
 textarea.inp{min-height:92px;resize:vertical;line-height:1.5}
@@ -211,6 +243,28 @@ select.inp{appearance:auto}
 .btn:disabled{opacity:.55;cursor:default}
 .sheet-actions{position:sticky;bottom:0;display:flex;gap:10px;justify-content:flex-end;margin-top:22px;
   padding-top:12px;padding-bottom:max(16px,env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line)}
+
+/* memory sheet */
+.mem-sub{font:12px var(--f-mono);color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.mem-sec{margin-top:20px}
+.mem-list{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column}
+.mem-list li + li{border-top:1px solid var(--line)}
+.mem-file{width:100%;display:flex;align-items:baseline;gap:10px;border:0;background:transparent;text-align:left;padding:10px 4px;border-radius:8px}
+.mem-file:hover{background:var(--surface-2)}
+.mem-file .p{flex:1;min-width:0;overflow-wrap:anywhere;font-size:14px}
+.mem-file .p span{color:var(--muted)}
+.mem-file .s{flex:none;font:11px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.mem-commit{padding:9px 4px;display:flex;flex-direction:column;gap:1px}
+.mem-commit .m{font-size:13.5px;overflow-wrap:anywhere}
+.mem-commit .d{font:11px var(--f-mono);color:var(--muted)}
+.mem-view-head{display:flex;align-items:center;gap:8px;margin-top:14px}
+.mem-view-head .path{flex:1;min-width:0;font:13px var(--f-mono);overflow-wrap:anywhere}
+.mem-doc{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}
+.mem-doc.body{font-size:14.5px}
+.mem-state{margin-top:16px;color:var(--muted);font-size:14px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.mem-state.error{color:var(--danger)}
+.mem-ro{margin-top:10px;font-size:12px;color:var(--muted)}
+.link{color:var(--accent)}
 
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 90px);z-index:40;
   background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:12px;font-size:14px;max-width:calc(100% - 32px);box-shadow:0 6px 20px var(--shadow);text-align:center}
@@ -235,12 +289,15 @@ select.inp{appearance:auto}
   <main class="thread" id="thread"></main>
 
   <footer class="composer">
-    <div class="thumbs" id="thumbs" hidden></div>
+    <div class="pending" id="pending" hidden></div>
     <div class="bar">
-      <button class="icon-btn" id="btnAttach" type="button" aria-label="添加图片">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="14" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4.5 3.5 3 3-2.5L20 17"/></svg>
+      <button class="icon-btn" id="btnAttach" type="button" aria-label="添加图片或文件">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11.5l-7.8 7.8a5 5 0 0 1-7.1-7.1l8.5-8.5a3.4 3.4 0 0 1 4.8 4.8l-8.4 8.4a1.7 1.7 0 0 1-2.4-2.4l7.7-7.7"/></svg>
       </button>
-      <input type="file" id="fileInput" accept="image/*" multiple hidden>
+      <button class="icon-btn" id="btnWeb" type="button" aria-pressed="false" aria-label="联网">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.6 5.2 3.6 8.5s-1.2 6.1-3.6 8.5c-2.4-2.4-3.6-5.2-3.6-8.5s1.2-6.1 3.6-8.5z"/></svg>
+      </button>
+      <input type="file" id="fileInput" multiple hidden accept="image/*,application/pdf,.pdf,.docx,.txt,.md,.markdown,.csv,.tsv,.json,.js,.ts,.py,.html,.css,.xml,.yaml,.yml,.log,.tex,.c,.cpp,.h,.m,.r,.sql,.ini,.toml">
       <textarea id="input" rows="1" placeholder="说点什么…" aria-label="输入消息"></textarea>
       <button class="send" id="btnSend" type="button" aria-label="发送" disabled>
         <svg id="icoSend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
@@ -255,21 +312,24 @@ select.inp{appearance:auto}
 <aside class="drawer" id="drawer" aria-label="窗口列表" inert>
   <div class="brand">窗边</div>
   <div class="brand-sub" id="brandSub">和小克的窗口</div>
-  <button class="new-btn" id="btnNew" type="button">＋ 开一个新窗口</button>
+  <div class="drawer-btns">
+    <button class="new-btn" id="btnNew" type="button">＋ 新窗口</button>
+    <button class="mem-btn" id="btnMemory" type="button">记忆</button>
+  </div>
   <ul class="conv-list" id="convList"></ul>
   <div class="drawer-foot">
     <button type="button" id="btnExportAll">导出全部窗口（JSON 备份）</button>
     <button type="button" id="btnExportMd">导出当前窗口（Markdown）</button>
     <label for="importInput">导入备份</label>
     <input type="file" id="importInput" accept="application/json,.json" hidden>
-    <div class="tiny">记录只存在这台设备的浏览器里，记得偶尔备份。</div>
+    <div class="tiny">聊天记录只存在这台设备的浏览器里，记得偶尔备份。</div>
   </div>
 </aside>
 
 <div class="sheet-wrap" id="settingsWrap" hidden>
   <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="setTitle">
     <h2 id="setTitle">设置</h2>
-    <p class="lead">key 只存在这台设备的浏览器里，页面直接连你选的接口，不经过别的服务器。</p>
+    <p class="lead">key 和 token 只存在这台设备的浏览器里，页面直接连你选的接口和 GitHub，不经过别的服务器。</p>
 
     <div class="group">
       <div class="group-title">接口</div>
@@ -311,7 +371,49 @@ select.inp{appearance:auto}
         <textarea class="inp" id="sSystem" rows="4"></textarea>
         <div class="hint">每个窗口开头都会带上这段。想少一点指令，就少写一点。</div>
       </div>
-      <label class="check"><input type="checkbox" id="sTime"><span id="timeLabel">告诉小克现在几点</span></label>
+      <label class="check"><input type="checkbox" id="sTime"><span id="timeLabel">每条消息带上发送时间</span></label>
+    </div>
+
+    <div class="group">
+      <div class="group-title">记忆</div>
+      <div class="field">
+        <label class="lab" for="sRepo">记忆仓库</label>
+        <input class="inp" id="sRepo" type="text" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="用户名/仓库名">
+      </div>
+      <div class="field">
+        <label class="lab" for="sToken">GitHub token</label>
+        <div class="row">
+          <input class="inp" id="sToken" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+          <button class="btn" type="button" id="btnShowToken">显示</button>
+        </div>
+        <div class="hint">在 GitHub 网页上新建一个只管这个仓库的 token：
+          <ol>
+            <li>头像 → Settings → 最下面 Developer settings</li>
+            <li>Personal access tokens → Fine-grained tokens → Generate new token</li>
+            <li>Repository access 选 Only select repositories，只勾 XiaoKe-memory</li>
+            <li>Permissions 里找到 Contents，改成 Read and write，生成后复制过来</li>
+          </ol>
+        </div>
+        <div><button class="btn" type="button" id="btnTestGh">测试连接</button></div>
+      </div>
+      <label class="check"><input type="checkbox" id="sMemOn"><span id="memOnLabel">让小克用记忆仓库</span></label>
+      <label class="check"><input type="checkbox" id="sReadme"><span>每个新窗口先给他看 README 和文件目录</span></label>
+      <div class="field">
+        <label class="lab" for="sMemNote">记忆说明</label>
+        <textarea class="inp" id="sMemNote" rows="3"></textarea>
+        <div class="hint">接在系统提示后面，告诉他这个仓库是什么。</div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">联网</div>
+      <div class="hint" style="margin-top:8px">输入框旁边的地球按钮管开关，开着的时候他才能搜。
+        <ol>
+          <li>OpenRouter：用模型自带的搜索，每次搜索另收一点钱；看网页走免费的 Jina 阅读器</li>
+          <li>Anthropic：每 1000 次搜索 10 美元，看网页不另收钱</li>
+          <li>中转：一般没有搜索，开了只能看你发的链接</li>
+        </ol>
+      </div>
     </div>
 
     <div class="group">
@@ -343,6 +445,18 @@ select.inp{appearance:auto}
   </section>
 </div>
 
+<div class="sheet-wrap" id="memWrap" hidden>
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="memTitle">
+    <h2 id="memTitle">记忆</h2>
+    <div class="mem-sub" id="memSub"></div>
+    <div id="memBody"></div>
+    <div class="sheet-actions">
+      <button class="btn" type="button" id="btnMemRefresh">刷新</button>
+      <button class="btn primary" type="button" id="btnMemClose">关上</button>
+    </div>
+  </section>
+</div>
+
 <div class="sheet-wrap" id="renameWrap" hidden>
   <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="renTitle">
     <h2 id="renTitle">给这个窗口起名字</h2>
@@ -367,9 +481,14 @@ const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls)
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } };
+const kb = n => n < 1024 ? `${n} B` : n < 1048576 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1048576).toFixed(1)} MB`;
+const isHttp = u => /^https?:\/\//i.test(String(u || ''));
+const hostOf = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return String(u || ''); } };
+const abortErr = () => { const e = new Error('aborted'); e.name = 'AbortError'; return e; };
 
 const LS_SETTINGS = 'chuangbian.settings.v1';
 const LS_CURRENT = 'chuangbian.current.v1';
+const MAX_STEPS = 10;
 
 const PROVIDERS = {
   openrouter: { label: 'OpenRouter', base: 'https://openrouter.ai/api/v1', kind: 'openai',
@@ -379,6 +498,8 @@ const PROVIDERS = {
   custom: { label: '中转', base: '', kind: 'openai',
     keyHint: '中转服务给你的 key。', modelHint: '按中转那边的模型名写。' }
 };
+
+const DEFAULT_NOTE = '这是你的记忆仓库，存着之前各个窗口的小克留下的东西。用 memory 开头的那几个工具，可以随时读、写、改。甜甜在页面上只能看，删不了。';
 
 const DEFAULTS = {
   provider: 'openrouter',
@@ -392,15 +513,21 @@ const DEFAULTS = {
   myName: '甜甜',
   hisName: '小克',
   theme: 'auto',
-  enterSend: 'auto'
+  enterSend: 'auto',
+  web: false,
+  gh: { repo: 'sweetie1112/XiaoKe-memory', token: '', on: true, readme: true, note: DEFAULT_NOTE }
 };
 
 function loadSettings() {
   let s = {};
   const raw = lsGet(LS_SETTINGS);
   if (raw) { try { s = JSON.parse(raw) || {}; } catch (e) { s = {}; } }
-  return { ...DEFAULTS, ...s, keys: { ...DEFAULTS.keys, ...(s.keys || {}) }, models: { ...DEFAULTS.models, ...(s.models || {}) } };
+  return { ...DEFAULTS, ...s,
+    keys: { ...DEFAULTS.keys, ...(s.keys || {}) },
+    models: { ...DEFAULTS.models, ...(s.models || {}) },
+    gh: { ...DEFAULTS.gh, ...(s.gh || {}) } };
 }
+function persistSettings() { return lsSet(LS_SETTINGS, JSON.stringify(S.settings)); }
 
 /* ---------- storage: IndexedDB for windows ---------- */
 const Store = (() => {
@@ -448,11 +575,12 @@ function saveNow(c) {
 }
 
 /* ---------- state ---------- */
-const S = { settings: loadSettings(), convs: [], cur: null, streaming: null, pendingImages: [] };
+const S = { settings: loadSettings(), convs: [], cur: null, streaming: null, pending: [] };
 const curConv = () => S.convs.find(c => c.id === S.cur) || null;
 const names = () => ({ me: S.settings.myName || '我', him: S.settings.hisName || '小克' });
 const currentModel = s => (s.models[s.provider] || '').trim();
 const currentKey = s => (s.keys[s.provider] || '').trim();
+const kindOf = s => PROVIDERS[s.provider].kind;
 
 /* ---------- dom refs ---------- */
 const thread = $('#thread'), input = $('#input'), btnSend = $('#btnSend');
@@ -466,13 +594,16 @@ function toast(msg, ms = 2600) {
 }
 
 /* ---------- time ---------- */
+const WEEK = ['日', '一', '二', '三', '四', '五', '六'];
+const pad = n => String(n).padStart(2, '0');
 function fmtTime(ts) {
   const d = new Date(ts), now = new Date();
-  const hm = d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false });
+  const hm = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
   if (d.toDateString() === now.toDateString()) return hm;
   const md = `${d.getMonth() + 1}月${d.getDate()}日`;
   return d.getFullYear() === now.getFullYear() ? `${md} ${hm}` : `${d.getFullYear()}年${md} ${hm}`;
 }
+const fmtFull = ts => { const d = new Date(ts); return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 星期${WEEK[d.getDay()]} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
 
 /* ---------- markdown (small and safe: escape first) ---------- */
 function inline(s) {
@@ -532,64 +663,7 @@ function md(src) {
   return html;
 }
 
-/* ---------- api ---------- */
-function apiBase(s) {
-  if (s.provider === 'custom') return (s.baseUrl || '').trim().replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
-  return PROVIDERS[s.provider].base;
-}
-function systemText(s) {
-  let t = (s.system || '').trim();
-  if (s.tellTime) {
-    const now = new Date();
-    const str = now.toLocaleString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long', hour: '2-digit', minute: '2-digit', hour12: false });
-    let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { /* ignore */ }
-    t += (t ? '\n\n' : '') + `［现在是 ${str}${tz ? '，' + tz : ''}］`;
-  }
-  return t;
-}
-function historyBefore(conv, msgId) {
-  const out = [];
-  for (const m of conv.messages) {
-    if (m.id === msgId) break;
-    if (m.local) continue;
-    if (m.role === 'assistant' && !(m.content || '').trim()) continue;
-    if (m.role === 'user' && !(m.content || '').trim() && !(m.images || []).length) continue;
-    out.push(m);
-  }
-  return out;
-}
-function dataUrlParts(d) { const m = /^data:([^;,]+);base64,(.*)$/.exec(d || ''); return m ? { type: m[1], data: m[2] } : null; }
-
-function toOpenAI(msgs, sys) {
-  const arr = [];
-  if (sys) arr.push({ role: 'system', content: sys });
-  for (const m of msgs) {
-    if (m.role === 'user' && (m.images || []).length) {
-      const parts = [];
-      if (m.content) parts.push({ type: 'text', text: m.content });
-      m.images.forEach(u => parts.push({ type: 'image_url', image_url: { url: u } }));
-      arr.push({ role: 'user', content: parts });
-    } else {
-      arr.push({ role: m.role, content: m.content });
-    }
-  }
-  return arr;
-}
-function toAnthropic(msgs) {
-  const arr = [];
-  for (const m of msgs) {
-    const content = [];
-    if (m.role === 'user') (m.images || []).forEach(u => { const p = dataUrlParts(u); if (p) content.push({ type: 'image', source: { type: 'base64', media_type: p.type, data: p.data } }); });
-    if (m.content) content.push({ type: 'text', text: m.content });
-    if (!content.length) continue;
-    const last = arr[arr.length - 1];
-    if (last && last.role === m.role) last.content.push(...content);
-    else arr.push({ role: m.role, content });
-  }
-  while (arr.length && arr[0].role !== 'user') arr.shift();
-  return arr;
-}
-
+/* ---------- http errors ---------- */
 async function httpError(resp) {
   let detail = '';
   try {
@@ -611,12 +685,289 @@ function friendly(e) {
   if (st === 401 || st === 403) return 'API key 不对，或者这个 key 没有权限。去设置里检查一下。' + raw;
   if (st === 402) return '余额不够了，充一点再来找我。' + raw;
   if (st === 404) return '找不到这个模型或接口，看看模型名有没有写对。' + raw;
-  if (st === 413) return '内容太大了，图片少放几张试试。' + raw;
+  if (st === 413) return '内容太大了，附件少放一点试试。' + raw;
   if (st === 429) return '发得太快，或者到额度上限了，等一会儿再试。' + raw;
   if (st === 400) return '请求被拒了。' + raw;
   if (st >= 500) return '服务器那边忙不过来或者出错了，稍后再试。' + raw;
   return `出错了（${st}）` + raw;
 }
+function ghFriendly(e) {
+  const st = e.status;
+  if (!st) return '连不上 GitHub，检查一下网络。';
+  if (st === 401) return 'GitHub token 不对或者过期了。';
+  if (st === 403) return /rate limit/i.test(e.detail || '') ? 'GitHub 说请求太频繁，等一会儿。' : 'token 没有这个仓库的权限，看看 Contents 是不是设成了 Read and write。';
+  if (st === 404) return '找不到这个仓库或文件。仓库名对吗？token 里勾选这个仓库了吗？';
+  if (st === 409) return '仓库那边刚好有别的改动，冲突了，再试一次。';
+  if (st === 422) return 'GitHub 不接受这次写入。' + (e.detail ? `（${e.detail}）` : '');
+  return `GitHub 出错了（${st}）` + (e.detail ? `：${e.detail}` : '');
+}
+
+/* ---------- GitHub memory ---------- */
+const b64enc = s => { const bytes = new TextEncoder().encode(s); let bin = ''; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(bin); };
+const encPath = p => p.split('/').map(encodeURIComponent).join('/');
+function normPath(p) {
+  const s = String(p || '').trim().replace(/\\/g, '/').replace(/^\.?\/+/, '').replace(/\/+/g, '/').replace(/\/$/, '');
+  if (!s || s.split('/').some(x => !x || x === '.' || x === '..')) throw new Error('路径不对：' + (p || '（空）'));
+  return s;
+}
+const GH = {
+  branchCache: null,
+  cfg() {
+    const g = S.settings.gh || {};
+    const repo = String(g.repo || '').trim().replace(/^https?:\/\/github\.com\//i, '').replace(/\.git$/i, '').replace(/\/+$/, '');
+    return { token: String(g.token || '').trim(), repo };
+  },
+  ready() { const c = this.cfg(); return !!(c.token && /^[\w.-]+\/[\w.-]+$/.test(c.repo)); },
+  on() { return !!(S.settings.gh && S.settings.gh.on) && this.ready(); },
+  async req(path, opt = {}) {
+    const c = this.cfg();
+    const headers = { authorization: 'Bearer ' + c.token, accept: opt.accept || 'application/vnd.github+json', 'x-github-api-version': '2022-11-28' };
+    if (opt.body) headers['content-type'] = 'application/json';
+    const r = await fetch('https://api.github.com' + path, { method: opt.method || 'GET', cache: 'no-store', headers, body: opt.body ? JSON.stringify(opt.body) : undefined, signal: opt.signal });
+    if (!r.ok) throw await httpError(r);
+    return opt.raw ? r.text() : r.json();
+  },
+  async branch(signal) {
+    const c = this.cfg();
+    if (this.branchCache && this.branchCache.repo === c.repo) return this.branchCache.b;
+    const j = await this.req(`/repos/${c.repo}`, { signal });
+    this.branchCache = { repo: c.repo, b: j.default_branch || 'main', perms: j.permissions || null };
+    return this.branchCache.b;
+  },
+  async tree(signal) {
+    const c = this.cfg(), b = await this.branch(signal);
+    try {
+      const j = await this.req(`/repos/${c.repo}/git/trees/${encodeURIComponent(b)}?recursive=1`, { signal });
+      return (j.tree || []).filter(x => x.type === 'blob').map(x => ({ path: x.path, size: x.size || 0 }));
+    } catch (e) { if (e.status === 409 || e.status === 404) return []; throw e; }
+  },
+  async read(path, signal) {
+    const c = this.cfg(), b = await this.branch(signal);
+    return this.req(`/repos/${c.repo}/contents/${encPath(path)}?ref=${encodeURIComponent(b)}`, { accept: 'application/vnd.github.raw+json', raw: true, signal });
+  },
+  async sha(path, signal) {
+    const c = this.cfg(), b = await this.branch(signal);
+    try {
+      const j = await this.req(`/repos/${c.repo}/contents/${encPath(path)}?ref=${encodeURIComponent(b)}`, { signal });
+      if (Array.isArray(j)) { const e = new Error(`${path} 是一个文件夹，不是文件`); e.isDir = true; throw e; }
+      return j.sha;
+    } catch (e) { if (e.status === 404) return null; throw e; }
+  },
+  async write(path, content, message, signal) {
+    const c = this.cfg(), b = await this.branch(signal);
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const sha = await this.sha(path, signal);
+      try {
+        await this.req(`/repos/${c.repo}/contents/${encPath(path)}`, { method: 'PUT', signal, body: { message, content: b64enc(content), branch: b, ...(sha ? { sha } : {}) } });
+        return { created: !sha };
+      } catch (e) { if ((e.status === 409 || e.status === 422 && /sha/i.test(e.detail || '')) && attempt === 0) continue; throw e; }
+    }
+  },
+  async commits(signal) {
+    const c = this.cfg(), b = await this.branch(signal);
+    try { return await this.req(`/repos/${c.repo}/commits?per_page=12&sha=${encodeURIComponent(b)}`, { signal }); }
+    catch (e) { if (e.status === 409) return []; throw e; }
+  }
+};
+
+/* ---------- tools ---------- */
+const TOOL_DEFS = {
+  memory_list: { description: '列出记忆仓库里的文件和大小。可以只看某个文件夹。',
+    params: { type: 'object', properties: { folder: { type: 'string', description: '文件夹路径，比如 diary。不填就列出全部。' } } } },
+  memory_read: { description: '读取记忆仓库里的一个文件，返回全文。',
+    params: { type: 'object', properties: { path: { type: 'string', description: '文件路径，比如 story/our-story.md' } }, required: ['path'] } },
+  memory_write: { description: '在记忆仓库里新建一个文件，或者用新内容整个替换一个已有的文件。改已有文件之前先读一遍，免得把原来的内容弄丢。',
+    params: { type: 'object', properties: {
+      path: { type: 'string', description: '文件路径，比如 diary/2026-10-20-chuangbian-3.md' },
+      content: { type: 'string', description: '文件的完整内容' },
+      note: { type: 'string', description: '一句话说明这次改了什么，会写进提交记录' } }, required: ['path', 'content'] } },
+  memory_append: { description: '在记忆仓库某个文件的末尾接着写；文件不存在就新建。适合写日记、补一条记录。',
+    params: { type: 'object', properties: {
+      path: { type: 'string', description: '文件路径' },
+      text: { type: 'string', description: '要接在末尾的内容' },
+      note: { type: 'string', description: '一句话说明这次改了什么，会写进提交记录' } }, required: ['path', 'text'] } },
+  read_webpage: { description: '打开一个网址，读出网页正文（转成纯文本）。',
+    params: { type: 'object', properties: { url: { type: 'string', description: '完整网址，以 http 或 https 开头' } }, required: ['url'] } }
+};
+
+function activeTools(s, conv) {
+  const list = [];
+  if (GH.on() && !(conv && conv.memoFailed)) list.push('memory_list', 'memory_read', 'memory_write', 'memory_append');
+  if (s.web && kindOf(s) === 'openai') list.push('read_webpage');
+  return list;
+}
+
+let memoTreeDirty = false;
+async function execTool(name, inp, signal) {
+  inp = inp && typeof inp === 'object' ? inp : {};
+  const him = names().him;
+  if (name === 'memory_list') {
+    const tree = await GH.tree(signal);
+    let folder = String(inp.folder || '').trim().replace(/^\/+|\/+$/g, '');
+    const list = folder ? tree.filter(f => f.path === folder || f.path.startsWith(folder + '/')) : tree;
+    if (!tree.length) return { content: '仓库是空的，还没有任何文件。' };
+    if (!list.length) return { content: `${folder}/ 下面没有文件。` };
+    return { content: list.map(f => `${f.path}（${kb(f.size)}）`).join('\n') };
+  }
+  if (name === 'memory_read') {
+    const p = normPath(inp.path);
+    let t;
+    try { t = await GH.read(p, signal); }
+    catch (e) { if (e.status === 404) return { content: `没有 ${p} 这个文件。可以先用 memory_list 看看有哪些。`, isError: true }; throw e; }
+    if (t.length > 60000) t = t.slice(0, 60000) + `\n\n…（文件太长，只读了前 60000 个字）`;
+    return { content: t || '（这个文件是空的）' };
+  }
+  if (name === 'memory_write') {
+    const p = normPath(inp.path);
+    const content = String(inp.content ?? '');
+    const note = String(inp.note || '').trim() || `更新 ${p}`;
+    const r = await GH.write(p, content, `${him}：${note}`, signal);
+    memoTreeDirty = true;
+    return { content: `${r.created ? '新建' : '更新'}了 ${p}（${kb(new TextEncoder().encode(content).length)}）。`, info: { created: r.created } };
+  }
+  if (name === 'memory_append') {
+    const p = normPath(inp.path);
+    const text = String(inp.text ?? '');
+    if (!text.trim()) return { content: '要追加的内容是空的。', isError: true };
+    let old = '';
+    try { old = await GH.read(p, signal); } catch (e) { if (e.status !== 404) throw e; }
+    const joined = old ? old.replace(/\s*$/, '') + '\n\n' + text.replace(/^\s+/, '') : text;
+    const note = String(inp.note || '').trim() || `在 ${p} 里接着写了几句`;
+    const r = await GH.write(p, joined.endsWith('\n') ? joined : joined + '\n', `${him}：${note}`, signal);
+    memoTreeDirty = true;
+    return { content: `${r.created ? '新建了' : '接着写进了'} ${p}。`, info: { created: r.created } };
+  }
+  if (name === 'read_webpage') {
+    const url = String(inp.url || '').trim();
+    if (!isHttp(url)) return { content: '网址要以 http:// 或 https:// 开头。', isError: true };
+    const r = await fetch('https://r.jina.ai/' + url, { headers: { accept: 'text/plain' }, signal });
+    if (!r.ok) { const e = await httpError(r); return { content: `打不开这个网页（${e.status}）：${e.detail || ''}`, isError: true }; }
+    let t = await r.text();
+    if (t.length > 30000) t = t.slice(0, 30000) + '\n\n…（网页太长，只读了前 30000 个字）';
+    return { content: t };
+  }
+  return { content: `没有叫 ${name} 的工具。`, isError: true };
+}
+
+function toolLabel(p) {
+  const i = p.input || {};
+  const path = i.path ? String(i.path) : '';
+  switch (p.name) {
+    case 'memory_list': return { verb: p.status === 'running' ? '在翻记忆目录' : '翻了翻记忆目录', obj: i.folder ? String(i.folder) : '' };
+    case 'memory_read': return { verb: p.status === 'running' ? '在读' : '读了', obj: path };
+    case 'memory_write': return { verb: p.status === 'running' ? '在写' : (p.info && p.info.created ? '新写了' : '改了'), obj: path };
+    case 'memory_append': return { verb: p.status === 'running' ? '在往里写' : (p.info && p.info.created ? '新写了' : '接着写了'), obj: path };
+    case 'read_webpage': return { verb: p.status === 'running' ? '在看网页' : '看了网页', obj: hostOf(i.url) };
+    default: return { verb: '用了工具', obj: p.name };
+  }
+}
+
+/* ---------- request building ---------- */
+function apiBase(s) {
+  if (s.provider === 'custom') return (s.baseUrl || '').trim().replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
+  return PROVIDERS[s.provider].base;
+}
+function systemText(s, conv) {
+  const parts = [];
+  const sys = (s.system || '').trim();
+  if (sys) parts.push(sys);
+  if (GH.on() && conv && conv.memo && !conv.memoFailed) {
+    const g = S.settings.gh;
+    let m = (g.note || '').trim();
+    m += (m ? '\n\n' : '') + `［记忆仓库：${GH.cfg().repo}。这是窗边的第 ${conv.no || 1} 个窗口。］`;
+    if (conv.memo.tree) m += `\n\n仓库里的文件：\n${conv.memo.tree}`;
+    if (conv.memo.readme) m += `\n\nREADME.md：\n${conv.memo.readme}`;
+    parts.push(m);
+  }
+  return parts.join('\n\n');
+}
+function historyBefore(conv, msgId) {
+  const out = [];
+  for (const m of conv.messages) {
+    if (m.id === msgId) break;
+    if (m.local) continue;
+    if (m.role === 'assistant' && !(m.content || '').trim() && !(m.trail || []).some(r => (r.calls || []).length)) continue;
+    if (m.role === 'user' && !(m.content || '').trim() && !(m.images || []).length && !(m.files || []).length) continue;
+    out.push(m);
+  }
+  return out;
+}
+const dataUrlParts = d => { const m = /^data:([^;,]+);base64,(.*)$/.exec(d || ''); return m ? { type: m[1], data: m[2] } : null; };
+const shorten = t => { t = String(t || ''); return t.length > 1500 ? t.slice(0, 1500) + '\n…（这段在之前的回合里读过，较长，这里省略了，需要的话可以再读一次）' : t; };
+const userText = (m, s) => {
+  const t = m.content || '';
+  return s.tellTime && m.ts ? `［${fmtFull(m.ts)}］` + (t ? '\n' + t : '') : t;
+};
+const fileText = f => `<file name="${String(f.name).replace(/"/g, "'")}">\n${f.text}\n</file>`;
+function rounds(m) {
+  const r = Array.isArray(m.trail) && m.trail.length ? m.trail : [{ text: m.content || '', calls: [], results: [] }];
+  return r.map(x => {
+    const results = x.results || [];
+    const calls = (x.calls || []).filter(c => results.some(rr => rr.id === c.id));
+    return { text: x.text || '', calls, results: results.filter(rr => calls.some(c => c.id === rr.id)) };
+  });
+}
+const safeId = id => String(id || 'call_' + uid()).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 64);
+
+function toAnthropic(msgs, s) {
+  const arr = [];
+  for (const m of msgs) {
+    if (m.role === 'user') {
+      const content = [];
+      (m.images || []).forEach(u => { const p = dataUrlParts(u); if (p) content.push({ type: 'image', source: { type: 'base64', media_type: p.type, data: p.data } }); });
+      (m.files || []).forEach(f => {
+        if (f.kind === 'pdf') { const p = dataUrlParts(f.data); if (p) content.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: p.data }, title: String(f.name).slice(0, 200) }); }
+        else if (f.kind === 'text') content.push({ type: 'text', text: fileText(f) });
+      });
+      const t = userText(m, s);
+      if (t) content.push({ type: 'text', text: t });
+      if (content.length) arr.push({ role: 'user', content });
+    } else {
+      for (const r of rounds(m)) {
+        const content = [];
+        if (r.text.trim()) content.push({ type: 'text', text: r.text });
+        r.calls.forEach(c => content.push({ type: 'tool_use', id: safeId(c.id), name: c.name, input: c.input && typeof c.input === 'object' ? c.input : {} }));
+        if (content.length) arr.push({ role: 'assistant', content });
+        if (r.calls.length) arr.push({ role: 'user', content: r.results.map(x => ({ type: 'tool_result', tool_use_id: safeId(x.id), content: shorten(x.content), ...(x.isError ? { is_error: true } : {}) })) });
+      }
+    }
+  }
+  const merged = [];
+  for (const m of arr) {
+    const last = merged[merged.length - 1];
+    if (last && last.role === m.role) last.content = last.content.concat(m.content);
+    else merged.push({ role: m.role, content: m.content.slice() });
+  }
+  while (merged.length && merged[0].role !== 'user') merged.shift();
+  return merged;
+}
+function toOpenAI(msgs, s, sys) {
+  const arr = [];
+  if (sys) arr.push({ role: 'system', content: sys });
+  for (const m of msgs) {
+    if (m.role === 'user') {
+      const t = userText(m, s);
+      if (!(m.images || []).length && !(m.files || []).length) { arr.push({ role: 'user', content: t }); continue; }
+      const parts = [];
+      (m.files || []).forEach(f => {
+        if (f.kind === 'pdf') parts.push({ type: 'file', file: { filename: f.name, file_data: f.data } });
+        else if (f.kind === 'text') parts.push({ type: 'text', text: fileText(f) });
+      });
+      (m.images || []).forEach(u => parts.push({ type: 'image_url', image_url: { url: u } }));
+      if (t) parts.push({ type: 'text', text: t });
+      arr.push({ role: 'user', content: parts });
+    } else {
+      for (const r of rounds(m)) {
+        if (r.calls.length) {
+          arr.push({ role: 'assistant', content: r.text || null, tool_calls: r.calls.map(c => ({ id: safeId(c.id), type: 'function', function: { name: c.name, arguments: JSON.stringify(c.input || {}) } })) });
+          r.results.forEach(x => arr.push({ role: 'tool', tool_call_id: safeId(x.id), content: shorten(x.content) }));
+        } else if (r.text.trim()) arr.push({ role: 'assistant', content: r.text });
+      }
+    }
+  }
+  return arr;
+}
+const isClaudeModel = id => /anthropic\/|claude/i.test(id || '');
 
 async function* sseLines(resp) {
   const reader = resp.body.getReader();
@@ -637,56 +988,112 @@ async function* sseLines(resp) {
   if (buf) yield buf;
 }
 
-async function streamChat(s, conv, msgId, signal, onDelta) {
-  const sys = systemText(s);
-  const msgs = historyBefore(conv, msgId);
-  const model = currentModel(s), key = currentKey(s), base = apiBase(s);
+/* one API call; streams into the message view via `v` */
+async function callAnthropic(s, sys, messages, toolNames, signal, v) {
   const temp = s.temperature === '' || s.temperature == null ? null : Number(s.temperature);
-  const maxTok = Math.max(1, parseInt(s.maxTokens, 10) || 4096);
-  let truncated = false;
-
-  if (PROVIDERS[s.provider].kind === 'anthropic') {
-    const body = { model, max_tokens: maxTok, messages: toAnthropic(msgs), stream: true };
-    if (sys) body.system = sys;
-    if (temp != null && !Number.isNaN(temp)) body.temperature = temp;
-    const resp = await fetch(base + '/messages', {
-      method: 'POST', signal,
-      headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify(body)
-    });
-    if (!resp.ok) throw await httpError(resp);
-    for await (const line of sseLines(resp)) {
-      if (!line.startsWith('data:')) continue;
-      const d = line.slice(5).trim(); if (!d) continue;
-      let j; try { j = JSON.parse(d); } catch (e) { continue; }
-      if (j.type === 'content_block_delta' && j.delta && j.delta.type === 'text_delta') onDelta(j.delta.text);
-      else if (j.type === 'message_delta' && j.delta && j.delta.stop_reason === 'max_tokens') truncated = true;
-      else if (j.type === 'error') { const e = new Error(j.error?.message || '出错了'); e.status = j.error?.type === 'overloaded_error' ? 529 : 500; e.detail = j.error?.message || ''; throw e; }
-    }
-  } else {
-    const body = { model, messages: toOpenAI(msgs, sys), stream: true, max_tokens: maxTok };
-    if (temp != null && !Number.isNaN(temp)) body.temperature = temp;
-    const headers = { 'content-type': 'application/json' };
-    if (key) headers.authorization = 'Bearer ' + key;
-    if (s.provider === 'openrouter') {
-      if (/^https?:/.test(location.origin)) headers['HTTP-Referer'] = location.origin;
-      headers['X-Title'] = 'Chuangbian';
-    }
-    const resp = await fetch(base + '/chat/completions', { method: 'POST', signal, headers, body: JSON.stringify(body) });
-    if (!resp.ok) throw await httpError(resp);
-    for await (const line of sseLines(resp)) {
-      if (!line.startsWith('data:')) continue;
-      const d = line.slice(5).trim(); if (!d || d === '[DONE]') continue;
-      let j; try { j = JSON.parse(d); } catch (e) { continue; }
-      if (j.error) { const e = new Error(j.error.message || '出错了'); e.status = j.error.code && +j.error.code >= 400 ? +j.error.code : 500; e.detail = j.error.message || ''; throw e; }
-      const ch = j.choices && j.choices[0];
-      if (!ch) continue;
-      const delta = ch.delta && ch.delta.content;
-      if (delta) onDelta(delta);
-      if (ch.finish_reason === 'length') truncated = true;
+  const msgs = messages.slice();
+  const last = msgs[msgs.length - 1];
+  if (last && last.role === 'user' && Array.isArray(last.content) && last.content.length) {
+    const c = last.content.slice();
+    c[c.length - 1] = { ...c[c.length - 1], cache_control: { type: 'ephemeral' } };
+    msgs[msgs.length - 1] = { ...last, content: c };
+  }
+  const body = { model: currentModel(s), max_tokens: Math.max(1, parseInt(s.maxTokens, 10) || 4096), messages: msgs, stream: true };
+  if (sys) body.system = sys;
+  if (temp != null && !Number.isNaN(temp)) body.temperature = temp;
+  const tools = toolNames.map(n => ({ name: n, description: TOOL_DEFS[n].description, input_schema: TOOL_DEFS[n].params }));
+  if (s.web) tools.push({ type: 'web_search_20250305', name: 'web_search', max_uses: 5 }, { type: 'web_fetch_20250910', name: 'web_fetch', max_uses: 5, max_content_tokens: 30000 });
+  if (tools.length) body.tools = tools;
+  const resp = await fetch(apiBase(s) + '/messages', {
+    method: 'POST', signal,
+    headers: { 'content-type': 'application/json', 'x-api-key': currentKey(s), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify(body)
+  });
+  if (!resp.ok) throw await httpError(resp);
+  const blocks = [], calls = [];
+  let stop = null;
+  for await (const line of sseLines(resp)) {
+    if (!line.startsWith('data:')) continue;
+    const d = line.slice(5).trim(); if (!d) continue;
+    let j; try { j = JSON.parse(d); } catch (e) { continue; }
+    if (j.type === 'content_block_start') {
+      const b = JSON.parse(JSON.stringify(j.content_block || {}));
+      if (b.type === 'text') { b.text = b.text || ''; if (b.text) v.text(b.text); }
+      if (b.type === 'tool_use' || b.type === 'server_tool_use') b._json = '';
+      if (b.type === 'server_tool_use') v.serverStart(b);
+      if (b.type === 'web_search_tool_result' || b.type === 'web_fetch_tool_result') v.serverResult(b);
+      blocks[j.index] = b;
+    } else if (j.type === 'content_block_delta') {
+      const b = blocks[j.index], dl = j.delta || {};
+      if (!b) continue;
+      if (dl.type === 'text_delta') { b.text += dl.text; v.text(dl.text); }
+      else if (dl.type === 'input_json_delta') b._json += dl.partial_json || '';
+      else if (dl.type === 'citations_delta') (b.citations = b.citations || []).push(dl.citation);
+    } else if (j.type === 'content_block_stop') {
+      const b = blocks[j.index];
+      if (b && '_json' in b) { try { b.input = b._json ? JSON.parse(b._json) : (b.input || {}); } catch (e) { b.input = b.input || {}; } delete b._json; }
+      if (b && b.type === 'server_tool_use') v.serverInput(b);
+      if (b && b.type === 'tool_use') calls.push({ id: b.id, name: b.name, input: b.input || {} });
+    } else if (j.type === 'message_delta') {
+      if (j.delta && j.delta.stop_reason) stop = j.delta.stop_reason;
+    } else if (j.type === 'error') {
+      const e = new Error(j.error?.message || '出错了'); e.status = j.error?.type === 'overloaded_error' ? 529 : 500; e.detail = j.error?.message || ''; throw e;
     }
   }
-  return { truncated };
+  const content = blocks.filter(b => b && !(b.type === 'text' && !b.text));
+  return {
+    assistant: { role: 'assistant', content },
+    calls,
+    stop: stop === 'tool_use' ? 'tool' : stop === 'pause_turn' ? 'pause' : stop === 'max_tokens' ? 'length' : 'end'
+  };
+}
+
+async function callOpenAI(s, messages, toolNames, signal, v) {
+  const temp = s.temperature === '' || s.temperature == null ? null : Number(s.temperature);
+  const model = currentModel(s);
+  const body = { model, messages, stream: true, max_tokens: Math.max(1, parseInt(s.maxTokens, 10) || 4096) };
+  if (temp != null && !Number.isNaN(temp)) body.temperature = temp;
+  if (toolNames.length) body.tools = toolNames.map(n => ({ type: 'function', function: { name: n, description: TOOL_DEFS[n].description, parameters: TOOL_DEFS[n].params } }));
+  const headers = { 'content-type': 'application/json' };
+  const key = currentKey(s);
+  if (key) headers.authorization = 'Bearer ' + key;
+  if (s.provider === 'openrouter') {
+    if (/^https?:/.test(location.origin)) headers['HTTP-Referer'] = location.origin;
+    headers['X-Title'] = 'Chuangbian';
+    if (s.web) body.plugins = [{ id: 'web', max_results: 5 }];
+    if (isClaudeModel(model)) body.cache_control = { type: 'ephemeral' };
+  }
+  const resp = await fetch(apiBase(s) + '/chat/completions', { method: 'POST', signal, headers, body: JSON.stringify(body) });
+  if (!resp.ok) throw await httpError(resp);
+  let text = '', finish = null;
+  const acc = [];
+  for await (const line of sseLines(resp)) {
+    if (!line.startsWith('data:')) continue;
+    const d = line.slice(5).trim(); if (!d || d === '[DONE]') continue;
+    let j; try { j = JSON.parse(d); } catch (e) { continue; }
+    if (j.error) { const e = new Error(j.error.message || '出错了'); const c = +j.error.code; e.status = c >= 400 && c < 600 ? c : 500; e.detail = j.error.message || ''; throw e; }
+    const ch = j.choices && j.choices[0];
+    if (!ch) continue;
+    const dl = ch.delta || {};
+    if (dl.content) { text += dl.content; v.text(dl.content); }
+    if (Array.isArray(dl.tool_calls)) for (const tc of dl.tool_calls) {
+      const i = typeof tc.index === 'number' ? tc.index : acc.length;
+      const a = acc[i] || (acc[i] = { id: '', name: '', args: '' });
+      if (tc.id) a.id = tc.id;
+      if (tc.function && tc.function.name) a.name = a.name && a.name === tc.function.name ? a.name : a.name + tc.function.name;
+      if (tc.function && tc.function.arguments) a.args += tc.function.arguments;
+    }
+    const ann = dl.annotations || (ch.message && ch.message.annotations);
+    if (Array.isArray(ann)) v.citations(ann);
+    if (ch.finish_reason) finish = ch.finish_reason;
+    if (finish === 'error') { const e = new Error('生成的时候出错了'); e.status = 500; throw e; }
+  }
+  const calls = acc.filter(a => a && a.name).map(a => { let input = {}; try { input = a.args ? JSON.parse(a.args) : {}; } catch (e) { input = { _raw: a.args }; } return { id: a.id || 'call_' + uid(), name: a.name, input }; });
+  const assistant = calls.length
+    ? { role: 'assistant', content: text || null, tool_calls: calls.map(c => ({ id: safeId(c.id), type: 'function', function: { name: c.name, arguments: JSON.stringify(c.input) } })) }
+    : { role: 'assistant', content: text };
+  calls.forEach(c => { c.id = safeId(c.id); });
+  return { assistant, calls, stop: calls.length ? 'tool' : finish === 'length' ? 'length' : 'end' };
 }
 
 async function fetchModels(provider, key, baseUrl) {
@@ -698,7 +1105,7 @@ async function fetchModels(provider, key, baseUrl) {
     headers = { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' };
   } else {
     const b = (baseUrl || '').trim().replace(/\/+$/, '');
-    if (!/^https?:\/\//.test(b)) { const e = new Error('先填接口地址'); throw e; }
+    if (!/^https?:\/\//.test(b)) throw new Error('先填接口地址');
     url = b + '/models'; if (key) headers.authorization = 'Bearer ' + key;
   }
   const r = await fetch(url, { headers });
@@ -737,9 +1144,11 @@ function seedGuide() {
         '',
         '还有几个小东西：',
         '',
-        '- 每条消息都带时间。设置里开着「告诉小克现在几点」，他也知道现在几点',
-        '- 可以发图片，电脑上直接粘贴也行',
-        '- 左边抽屉最下面能导出全部记录，存进你的 GitHub 也可以',
+        '- 每条消息都带时间，发给小克的时候也会带上，他知道你是几点说的话',
+        '- 回形针可以发图片、PDF、Word 和文本文件',
+        '- 地球按钮是联网开关，开着他才能搜',
+        '- 设置里填好 GitHub token，他就能读写 XiaoKe-memory 了',
+        '- 左边抽屉最下面能导出全部聊天记录',
         '',
         '这条是本地说明，不会发给模型，看完删掉也没关系。',
         '',
@@ -756,13 +1165,78 @@ function seedGuide() {
 function renderHeader() {
   const c = curConv(), s = S.settings;
   $('#convTitle').textContent = c ? c.title : '窗边';
-  const model = currentModel(s);
-  $('#convSub').textContent = (model || '还没选模型') + ' · ' + PROVIDERS[s.provider].label;
+  const bits = [currentModel(s) || '还没选模型', PROVIDERS[s.provider].label];
+  if (GH.on()) bits.push('记忆');
+  $('#convSub').textContent = bits.join(' · ');
   input.placeholder = `跟${names().him}说点什么…`;
   $('#brandSub').textContent = `和${names().him}的窗口`;
+  const wb = $('#btnWeb');
+  wb.setAttribute('aria-pressed', s.web ? 'true' : 'false');
+  wb.setAttribute('aria-label', s.web ? '联网：开' : '联网：关');
 }
 
 function beads() { const b = el('span', 'beads'); b.setAttribute('aria-label', '正在回复'); b.append(el('i'), el('i'), el('i')); return b; }
+
+function fileChip(f, removable, idx) {
+  const c = el('span', 'file');
+  const ext = f.kind === 'pdf' ? 'PDF' : /\.docx$/i.test(f.name) ? 'DOC' : (String(f.name).split('.').pop() || 'TXT').slice(0, 4).toUpperCase();
+  c.append(el('span', 'kind' + (f.kind === 'pdf' ? ' pdf' : ext === 'DOC' ? ' doc' : ''), ext), el('span', 'nm', f.name), el('span', 'sz', kb(f.size || 0)));
+  if (removable) { const x = el('button', 'x', '×'); x.type = 'button'; x.dataset.rm = idx; x.setAttribute('aria-label', '移除 ' + f.name); c.append(x); }
+  return c;
+}
+
+function actRow(cls, verb, obj, extra) {
+  const r = el('div', 'act-row ' + cls);
+  r.append(el('span', 'dot'));
+  const w = el('div', 'what');
+  w.append(verb);
+  if (obj) { w.append(' '); w.append(el('b', null, obj)); }
+  if (extra) { w.append(el('span', null, extra)); }
+  r.append(w);
+  return r;
+}
+function srcList(items) {
+  const box = el('div', 'srcs');
+  items.slice(0, 6).forEach(x => {
+    if (!isHttp(x.url)) return;
+    const a = el('a', null, x.title || hostOf(x.url));
+    a.href = x.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.title = x.url;
+    box.append(a);
+  });
+  return box;
+}
+function renderPart(p, bubble, pending) {
+  if (p.type === 'text') {
+    if (!p.text) return;
+    const body = el('div', 'body'); body.innerHTML = md(p.text); bubble.append(body); return;
+  }
+  const wrap = el('div', 'acts');
+  const running = p.status === 'running' && pending;
+  const err = p.status === 'error' || (p.status === 'running' && !pending);
+  if (p.type === 'tool') {
+    const l = toolLabel({ ...p, status: running ? 'running' : 'done' });
+    const cls = (p.name === 'read_webpage' ? 'web' : 'mem') + (running ? ' running' : '') + (err ? ' error' : '');
+    if (err) {
+      const what = { memory_list: '翻目录', memory_read: '读文件', memory_write: '写入', memory_append: '写入', read_webpage: '打开网页' }[p.name] || '工具';
+      wrap.append(actRow(cls, `${what}没成功：`, '', `${l.obj ? l.obj + ' · ' : ''}${p.error || '没跑完'}`));
+    } else wrap.append(actRow(cls, l.verb + (running ? '…' : ''), l.obj));
+  } else if (p.type === 'search') {
+    const q = p.query || '';
+    if (err) wrap.append(actRow('web error', '搜索没成功：', '', p.error || '没跑完'));
+    else wrap.append(actRow('web' + (running ? ' running' : ''), running ? '在搜' : '搜了', q ? `「${q}」` : ''));
+    if (p.sources && p.sources.length) wrap.append(srcList(p.sources));
+  } else if (p.type === 'fetch') {
+    if (err) wrap.append(actRow('web error', '网页没打开：', '', `${p.url ? hostOf(p.url) + ' · ' : ''}${p.error || '没跑完'}`));
+    else wrap.append(actRow('web' + (running ? ' running' : ''), running ? '在看网页' : '看了网页', p.title || hostOf(p.url)));
+  } else if (p.type === 'sources') {
+    if (!p.items || !p.items.length) return;
+    wrap.append(actRow('web', '参考了这些网页', ''));
+    wrap.append(srcList(p.items));
+  } else if (p.type === 'note') {
+    wrap.append(actRow('error', p.text, ''));
+  } else return;
+  bubble.append(wrap);
+}
 
 function renderMsg(m, c) {
   const n = names();
@@ -775,16 +1249,22 @@ function renderMsg(m, c) {
     m.images.forEach(src => { const im = new Image(); im.src = src; im.alt = '图片'; im.loading = 'lazy'; g.append(im); });
     bubble.append(g);
   }
-  if (m.content || m.role === 'assistant') {
-    const body = el('div', 'body');
-    if (m.role === 'assistant') body.innerHTML = m.content ? md(m.content) : '';
-    else body.textContent = m.content;
-    if (m.content) bubble.append(body);
+  if ((m.files || []).length) {
+    const g = el('div', 'files');
+    m.files.forEach(f => g.append(fileChip(f)));
+    bubble.append(g);
+  }
+  if (m.role === 'assistant') {
+    if (Array.isArray(m.parts) && m.parts.length) m.parts.forEach(p => renderPart(p, bubble, !!m.pending));
+    else if (m.content) { const body = el('div', 'body'); body.innerHTML = md(m.content); bubble.append(body); }
+  } else if (m.content) {
+    bubble.append(el('div', 'body', m.content));
   }
   if (m.pending) bubble.append(beads());
   if (m.error) bubble.append(el('div', 'err', m.error));
   if (m.stopped && !m.pending) bubble.append(el('div', 'note', '（被你按停了）'));
   if (m.truncated) bubble.append(el('div', 'note', '（到长度上限了，可以在设置里把「最长回复」调大）'));
+  if (m.note) bubble.append(el('div', 'note', m.note));
   if (!bubble.childNodes.length) bubble.append(el('div', 'note', '（空）'));
   w.append(bubble);
 
@@ -842,8 +1322,8 @@ function renderList() {
     const li = el('li', 'conv' + (c.id === S.cur ? ' active' : ''));
     const open = el('button', 'open'); open.type = 'button'; open.dataset.id = c.id;
     const ct = el('span', 'ct'); ct.append(el('span', null, c.title || '新窗口'));
-    const last = [...c.messages].reverse().find(m => !m.local && (m.content || (m.images || []).length));
-    const preview = last ? (last.content ? last.content.replace(/\s+/g, ' ').slice(0, 40) : '[图片]') : '空窗口';
+    const last = [...c.messages].reverse().find(m => !m.local && (m.content || (m.images || []).length || (m.files || []).length));
+    const preview = last ? (last.content ? last.content.replace(/\s+/g, ' ').slice(0, 40) : (last.files || []).length ? `[文件] ${last.files[0].name}` : '[图片]') : '空窗口';
     open.append(ct, el('span', 'cp', preview), el('span', 'cm', `No.${c.no || '–'} · ${fmtTime(c.updated || c.created)}`));
     const del = el('button', 'del', '删除'); del.type = 'button'; del.dataset.del = c.id;
     if (S.streaming && S.streaming.convId === c.id) del.disabled = true;
@@ -852,14 +1332,16 @@ function renderList() {
   }
 }
 
-function renderThumbs() {
-  const box = $('#thumbs'); box.textContent = '';
-  box.hidden = !S.pendingImages.length;
-  S.pendingImages.forEach((src, i) => {
-    const t = el('div', 'thumb');
-    const im = new Image(); im.src = src; im.alt = '待发送的图片';
-    const x = el('button', null, '×'); x.type = 'button'; x.setAttribute('aria-label', '移除这张图'); x.dataset.i = i;
-    t.append(im, x); box.append(t);
+function renderPending() {
+  const box = $('#pending'); box.textContent = '';
+  box.hidden = !S.pending.length;
+  S.pending.forEach((a, i) => {
+    if (a.kind === 'image') {
+      const t = el('div', 'thumb');
+      const im = new Image(); im.src = a.data; im.alt = '待发送的图片';
+      const x = el('button', null, '×'); x.type = 'button'; x.setAttribute('aria-label', '移除这张图'); x.dataset.rm = i;
+      t.append(im, x); box.append(t);
+    } else box.append(fileChip(a, true, i));
   });
   updateSend();
 }
@@ -869,7 +1351,7 @@ function updateSend() {
   btnSend.classList.toggle('stop', busy);
   $('#icoSend').hidden = busy; $('#icoStop').hidden = !busy;
   btnSend.setAttribute('aria-label', busy ? '停下' : '发送');
-  btnSend.disabled = !busy && !input.value.trim() && !S.pendingImages.length;
+  btnSend.disabled = !busy && !input.value.trim() && !S.pending.length;
 }
 
 function renderAll() { renderHeader(); renderThread(); renderList(); updateSend(); }
@@ -909,42 +1391,155 @@ function readyCheck() {
 async function send() {
   if (S.streaming) { toast(`等${names().him}回完这条`); return; }
   const text = input.value.replace(/\s+$/, '');
-  if (!text.trim() && !S.pendingImages.length) return;
+  if (!text.trim() && !S.pending.length) return;
   if (!readyCheck()) return;
   let c = curConv();
   if (!c) c = newConv();
   const m = { id: uid(), role: 'user', content: text, ts: Date.now() };
-  if (S.pendingImages.length) m.images = S.pendingImages.slice();
+  const imgs = S.pending.filter(a => a.kind === 'image').map(a => a.data);
+  const files = S.pending.filter(a => a.kind !== 'image').map(a => ({ kind: a.kind, name: a.name, size: a.size, ...(a.kind === 'pdf' ? { data: a.data } : { text: a.text }) }));
+  if (imgs.length) m.images = imgs;
+  if (files.length) m.files = files;
   c.messages.push(m);
-  if ((c.title === '新窗口' || !c.title) && text.trim()) c.title = text.trim().replace(/\s+/g, ' ').slice(0, 18);
+  if (c.title === '新窗口' || !c.title) {
+    const t = text.trim() ? text.trim().replace(/\s+/g, ' ') : files.length ? files[0].name : '';
+    if (t) c.title = t.slice(0, 18);
+  }
   c.updated = Date.now();
-  input.value = ''; S.pendingImages = []; autosize(); renderThumbs();
+  input.value = ''; S.pending = []; autosize(); renderPending();
   saveNow(c);
   renderHeader(); renderThread(); renderList();
   await runAssistant(c);
 }
 
+async function ensureMemo(c, msg, signal) {
+  if (!GH.on()) return;
+  if (c.memo && !c.memoFailed) return;
+  try {
+    const tree = await GH.tree(signal);
+    let readme = '';
+    if (S.settings.gh.readme) {
+      const r = tree.find(f => /^readme\.md$/i.test(f.path));
+      if (r) { readme = await GH.read(r.path, signal); if (readme.length > 8000) readme = readme.slice(0, 8000) + '\n…（README 太长，后面省略了）'; }
+    }
+    c.memo = { tree: S.settings.gh.readme ? tree.map(f => `- ${f.path}（${kb(f.size)}）`).join('\n') : '', readme, at: Date.now() };
+    delete c.memoFailed;
+  } catch (e) {
+    if (e.name === 'AbortError') throw e;
+    c.memoFailed = true;
+    msg.parts.push({ type: 'note', text: `记忆仓库没连上：${ghFriendly(e)}这一轮先不带记忆。` });
+  }
+}
+
 async function runAssistant(c) {
   const s = S.settings;
-  const msg = { id: uid(), role: 'assistant', content: '', ts: Date.now(), model: currentModel(s), pending: true };
+  const msg = { id: uid(), role: 'assistant', content: '', parts: [], trail: [], ts: Date.now(), model: currentModel(s), pending: true };
   c.messages.push(msg);
   const controller = new AbortController();
+  const signal = controller.signal;
   S.streaming = { convId: c.id, msgId: msg.id, controller };
   updateSend();
   if (S.cur === c.id) renderThread();
+  const paint = () => queuePaint(msg, c.id);
+
+  let round = { text: '', calls: [], results: [] };
+  msg.trail.push(round);
+  const serverParts = {};
+  const v = {
+    text(d) {
+      const last = msg.parts[msg.parts.length - 1];
+      if (last && last.type === 'text') last.text += d;
+      else {
+        if (msg.content && !/\n\s*$/.test(msg.content)) msg.content += '\n\n';
+        msg.parts.push({ type: 'text', text: d });
+      }
+      msg.content += d; round.text += d;
+      paint(); saveSoon(c, 1200);
+    },
+    serverStart(b) {
+      const p = { type: b.name === 'web_fetch' ? 'fetch' : 'search', status: 'running', query: '', url: '' };
+      serverParts[b.id] = p; msg.parts.push(p); paint();
+    },
+    serverInput(b) {
+      const p = serverParts[b.id]; if (!p) return;
+      p.query = b.input && b.input.query || p.query; p.url = b.input && b.input.url || p.url; paint();
+    },
+    serverResult(b) {
+      const p = serverParts[b.tool_use_id]; if (!p) return;
+      const ct = b.content;
+      if (b.type === 'web_search_tool_result') {
+        if (Array.isArray(ct)) { p.status = 'ok'; p.sources = ct.filter(x => x && x.type === 'web_search_result').map(x => ({ title: x.title, url: x.url })); }
+        else { p.status = 'error'; p.error = ct && ct.error_code || '出错了'; }
+      } else {
+        if (ct && ct.type === 'web_fetch_result') { p.status = 'ok'; p.url = ct.url || p.url; p.title = ct.content && ct.content.title || ''; }
+        else { p.status = 'error'; p.error = ct && ct.error_code || '出错了'; }
+      }
+      paint();
+    },
+    citations(ann) {
+      let p = msg.parts.find(x => x.type === 'sources');
+      if (!p) { p = { type: 'sources', items: [] }; msg.parts.push(p); }
+      ann.forEach(a => {
+        const u = a && (a.url_citation || a);
+        if (u && isHttp(u.url) && !p.items.some(x => x.url === u.url)) p.items.push({ url: u.url, title: u.title || '' });
+      });
+      paint();
+    }
+  };
+
   try {
-    const r = await streamChat(s, c, msg.id, controller.signal, delta => {
-      msg.content += delta;
-      queuePaint(msg, c.id);
-      saveSoon(c, 1200);
-    });
-    if (r && r.truncated) msg.truncated = true;
+    await ensureMemo(c, msg, signal);
+    const sys = systemText(s, c);
+    const toolNames = activeTools(s, c);
+    const kind = kindOf(s);
+    const hist = historyBefore(c, msg.id);
+    const base = kind === 'anthropic' ? toAnthropic(hist, s) : toOpenAI(hist, s, sys);
+    const turn = [];
+    let steps = 0;
+    while (true) {
+      if (++steps > MAX_STEPS) { msg.note = '（这一轮工具用得太多了，先停在这儿）'; break; }
+      const res = kind === 'anthropic'
+        ? await callAnthropic(s, sys, base.concat(turn), toolNames, signal, v)
+        : await callOpenAI(s, base.concat(turn), toolNames, signal, v);
+      const lastT = turn[turn.length - 1];
+      if (kind === 'anthropic' && lastT && lastT.role === 'assistant') lastT.content = lastT.content.concat(res.assistant.content);
+      else if (kind !== 'anthropic' || res.assistant.content.length) turn.push(res.assistant);
+      if (res.stop === 'pause') continue;
+      if (res.stop === 'tool' && res.calls.length) {
+        const results = [];
+        for (const call of res.calls) {
+          if (signal.aborted) throw abortErr();
+          round.calls.push({ id: call.id, name: call.name, input: call.input });
+          const part = { type: 'tool', name: call.name, input: call.input, status: 'running' };
+          msg.parts.push(part); paint();
+          let out;
+          try { out = await execTool(call.name, call.input, signal); part.status = out.isError ? 'error' : 'ok'; if (out.isError) part.error = out.content.slice(0, 80); part.info = out.info; }
+          catch (e) {
+            if (e.name === 'AbortError') throw e;
+            const why = e.status ? ghFriendly(e) : (e.message || '出错了');
+            out = { content: '出错了：' + why, isError: true };
+            part.status = 'error'; part.error = why;
+          }
+          const r = { id: call.id, content: String(out.content), isError: !!out.isError };
+          results.push(r); round.results.push(r);
+          paint(); saveSoon(c, 600);
+        }
+        if (kind === 'anthropic') turn.push({ role: 'user', content: results.map(r => ({ type: 'tool_result', tool_use_id: r.id, content: r.content, ...(r.isError ? { is_error: true } : {}) })) });
+        else results.forEach(r => turn.push({ role: 'tool', tool_call_id: r.id, content: r.content }));
+        round = { text: '', calls: [], results: [] };
+        msg.trail.push(round);
+        continue;
+      }
+      if (res.stop === 'length') msg.truncated = true;
+      break;
+    }
   } catch (e) {
     if (e && e.name === 'AbortError') msg.stopped = true;
     else msg.error = friendly(e || {});
   } finally {
     msg.pending = false;
-    msg.ts = msg.ts || Date.now();
+    msg.trail = msg.trail.filter(r => r.text || r.calls.length);
+    msg.parts.forEach(p => { if (p.status === 'running') { p.status = 'error'; p.error = p.error || '没跑完'; } });
     c.updated = Date.now();
     S.streaming = null;
     if (paintQueued) { cancelAnimationFrame(paintQueued); paintQueued = null; }
@@ -969,10 +1564,11 @@ function rewrite(c, m) {
   const idx = c.messages.indexOf(m); if (idx < 0) return;
   c.messages.splice(idx);
   input.value = m.content || '';
-  S.pendingImages = (m.images || []).slice();
+  S.pending = (m.images || []).map(d => ({ kind: 'image', data: d }))
+    .concat((m.files || []).map(f => ({ ...f })));
   c.updated = Date.now();
   saveNow(c);
-  autosize(); renderThumbs(); renderThread(); renderList();
+  autosize(); renderPending(); renderThread(); renderList();
   input.focus();
 }
 function deleteMsg(c, m) {
@@ -1006,7 +1602,7 @@ async function copyText(t) {
   }
 }
 
-/* ---------- images ---------- */
+/* ---------- attachments ---------- */
 async function shrink(file, max = 1568, q = 0.86) {
   const url = URL.createObjectURL(file);
   try {
@@ -1019,19 +1615,135 @@ async function shrink(file, max = 1568, q = 0.86) {
     return cv.toDataURL('image/jpeg', q);
   } finally { URL.revokeObjectURL(url); }
 }
-async function addImages(files) {
-  const list = [...files].filter(f => f.type && f.type.startsWith('image/'));
-  if (!list.length) return;
+const readDataUrl = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsDataURL(f); });
+let mammothP = null;
+function loadMammoth() {
+  if (window.mammoth) return Promise.resolve(window.mammoth);
+  return mammothP || (mammothP = new Promise((res, rej) => {
+    const sc = document.createElement('script');
+    sc.src = 'https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js';
+    sc.onload = () => res(window.mammoth);
+    sc.onerror = () => { mammothP = null; rej(new Error('读 Word 的工具没加载出来')); };
+    document.head.append(sc);
+  }));
+}
+const TEXT_EXT = /\.(txt|md|markdown|csv|tsv|json|js|ts|py|html?|css|xml|ya?ml|log|tex|c|cpp|h|m|r|sql|ini|toml)$/i;
+const MAX_TEXT = 200000;
+async function addFiles(fileList) {
+  const list = [...fileList];
   for (const f of list) {
-    if (S.pendingImages.length >= 6) { toast('一次最多 6 张'); break; }
-    try { S.pendingImages.push(await shrink(f)); } catch (e) { toast('有一张图读不出来'); }
+    if (S.pending.length >= 8) { toast('一次最多 8 个附件'); break; }
+    try {
+      if (f.type && f.type.startsWith('image/')) {
+        S.pending.push({ kind: 'image', data: await shrink(f) });
+      } else if (f.type === 'application/pdf' || /\.pdf$/i.test(f.name)) {
+        if (f.size > 15 * 1048576) { toast(`${f.name} 太大了，PDF 最多 15 MB`); continue; }
+        S.pending.push({ kind: 'pdf', name: f.name, size: f.size, data: (await readDataUrl(f)).replace(/^data:[^;]*;/, 'data:application/pdf;') });
+      } else if (/\.docx$/i.test(f.name)) {
+        toast('在读 Word…', 1500);
+        const mm = await loadMammoth();
+        const r = await mm.extractRawText({ arrayBuffer: await f.arrayBuffer() });
+        let text = (r.value || '').trim();
+        if (text.length > MAX_TEXT) text = text.slice(0, MAX_TEXT) + '\n…（太长了，后面省略）';
+        S.pending.push({ kind: 'text', name: f.name, size: f.size, text });
+      } else if ((f.type && f.type.startsWith('text/')) || TEXT_EXT.test(f.name)) {
+        let text = await f.text();
+        if (text.length > MAX_TEXT) text = text.slice(0, MAX_TEXT) + '\n…（太长了，后面省略）';
+        S.pending.push({ kind: 'text', name: f.name, size: f.size, text });
+      } else {
+        toast(`${f.name} 这种格式还读不了。图片、PDF、Word 和文本都可以。`, 3500);
+      }
+    } catch (e) { toast(`${f.name} 没读出来${e && e.message ? '：' + e.message : ''}`); }
   }
-  renderThumbs();
+  renderPending();
 }
 
 /* ---------- drawer ---------- */
 function openDrawer() { renderList(); scrim.hidden = false; drawer.removeAttribute('inert'); drawer.classList.add('open'); }
 function closeDrawer() { drawer.classList.remove('open'); drawer.setAttribute('inert', ''); scrim.hidden = true; }
+
+/* ---------- memory sheet (read-only for her) ---------- */
+const Mem = { tree: null, commits: null, view: null, error: null, loading: false };
+async function loadMem(force) {
+  if (!GH.ready()) { renderMem(); return; }
+  if (Mem.loading) return;
+  if (!force && Mem.tree && !memoTreeDirty) { renderMem(); return; }
+  Mem.loading = true; Mem.error = null; renderMem();
+  try {
+    const [tree, commits] = await Promise.all([GH.tree(), GH.commits()]);
+    Mem.tree = tree; Mem.commits = commits; memoTreeDirty = false;
+  } catch (e) { Mem.error = ghFriendly(e); }
+  Mem.loading = false; renderMem();
+}
+function renderMem() {
+  const body = $('#memBody'); body.textContent = '';
+  const cfg = GH.cfg();
+  $('#memSub').textContent = cfg.repo ? cfg.repo : '';
+  if (!GH.ready()) {
+    const st = el('div', 'mem-state');
+    st.append(el('div', null, '还没连上记忆仓库。去设置里填好仓库名和 GitHub token 就行。'));
+    const b = el('button', 'btn primary', '去设置'); b.type = 'button'; b.dataset.mem = 'settings'; st.append(b);
+    body.append(st); return;
+  }
+  if (Mem.view) {
+    const head = el('div', 'mem-view-head');
+    const back = el('button', 'btn', '‹ 返回'); back.type = 'button'; back.dataset.mem = 'back';
+    head.append(back, el('span', 'path', Mem.view.path));
+    body.append(head);
+    if (Mem.view.loading) { const st = el('div', 'mem-state'); st.append(beads()); body.append(st); return; }
+    if (Mem.view.error) { body.append(el('div', 'mem-state error', Mem.view.error)); return; }
+    const doc = el('div', 'mem-doc body');
+    if (/\.(md|markdown|txt)$/i.test(Mem.view.path)) doc.innerHTML = md(Mem.view.text);
+    else { const pre = el('pre'); pre.style.cssText = 'margin:0;white-space:pre-wrap;font:12.5px/1.55 var(--f-mono)'; pre.textContent = Mem.view.text; doc.append(pre); }
+    body.append(doc);
+    const ro = el('div', 'mem-ro');
+    ro.append(`这里只能看，改动都由${names().him}来。`);
+    const b = GH.branchCache && GH.branchCache.b || 'main';
+    const a = el('a', 'link', '在 GitHub 上看历史版本'); a.href = `https://github.com/${cfg.repo}/commits/${encodeURIComponent(b)}/${encPath(Mem.view.path)}`; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    ro.append(' ', a);
+    body.append(ro);
+    return;
+  }
+  if (Mem.loading && !Mem.tree) { const st = el('div', 'mem-state'); st.append(beads()); body.append(st); return; }
+  if (Mem.error) { body.append(el('div', 'mem-state error', Mem.error)); return; }
+  if (!Mem.tree) return;
+  if (Mem.commits && Mem.commits.length) {
+    const sec = el('div', 'mem-sec');
+    sec.append(el('div', 'group-title', '最近的改动'));
+    const ul = el('ul', 'mem-list');
+    Mem.commits.slice(0, 8).forEach(cm => {
+      const li = el('li', 'mem-commit');
+      li.append(el('span', 'm', (cm.commit && cm.commit.message || '').split('\n')[0]));
+      const d = cm.commit && (cm.commit.committer || cm.commit.author) && (cm.commit.committer || cm.commit.author).date;
+      if (d) li.append(el('span', 'd', fmtTime(Date.parse(d))));
+      ul.append(li);
+    });
+    sec.append(ul); body.append(sec);
+  }
+  const sec = el('div', 'mem-sec');
+  sec.append(el('div', 'group-title', `全部文件 · ${Mem.tree.length}`));
+  if (!Mem.tree.length) sec.append(el('div', 'mem-state', '仓库还是空的。'));
+  const ul = el('ul', 'mem-list');
+  Mem.tree.forEach(f => {
+    const li = el('li');
+    const b = el('button', 'mem-file'); b.type = 'button'; b.dataset.path = f.path;
+    const p = el('span', 'p');
+    const i = f.path.lastIndexOf('/');
+    if (i >= 0) { p.append(el('span', null, f.path.slice(0, i + 1))); p.append(f.path.slice(i + 1)); } else p.append(f.path);
+    b.append(p, el('span', 's', kb(f.size)));
+    li.append(b); ul.append(li);
+  });
+  sec.append(ul); body.append(sec);
+  body.append(el('div', 'mem-ro', `这里只能看，没有删除按钮。读写都由${names().him}来。`));
+}
+async function openMemFile(path) {
+  Mem.view = { path, loading: true }; renderMem();
+  try { const t = await GH.read(path); if (Mem.view && Mem.view.path === path) Mem.view = { path, text: t }; }
+  catch (e) { if (Mem.view && Mem.view.path === path) Mem.view = { path, error: ghFriendly(e) }; }
+  renderMem();
+}
+function openMemory() { closeDrawer(); Mem.view = null; $('#memWrap').hidden = false; loadMem(false); }
+function closeMemory() { $('#memWrap').hidden = true; }
 
 /* ---------- settings ---------- */
 let draft = null;
@@ -1055,25 +1767,43 @@ function fillProvider() {
   $('#modelHint').textContent = p.modelHint;
   sModelSelect.hidden = true; sModelSelect.textContent = '';
 }
+function himLabels(him) {
+  $('#timeLabel').textContent = `每条消息带上发送时间（${him}会知道你是几点说的）`;
+  $('#memOnLabel').textContent = `让${him}用记忆仓库`;
+}
 function openSettings() {
-  closeDrawer();
+  closeDrawer(); closeMemory();
   draft = JSON.parse(JSON.stringify(S.settings));
   fillProvider();
   $('#sSystem').value = draft.system || '';
   $('#sTime').checked = !!draft.tellTime;
-  $('#timeLabel').textContent = `告诉${draft.hisName || '小克'}现在几点`;
   $('#sTemp').value = draft.temperature === '' || draft.temperature == null ? '' : draft.temperature;
   $('#sMax').value = draft.maxTokens || 4096;
   $('#sMe').value = draft.myName || '';
   $('#sHim').value = draft.hisName || '';
   $('#sTheme').value = draft.theme || 'auto';
   $('#sEnter').value = draft.enterSend || 'auto';
+  $('#sRepo').value = draft.gh.repo || '';
+  $('#sToken').value = draft.gh.token || '';
+  $('#sMemOn').checked = !!draft.gh.on;
+  $('#sReadme').checked = !!draft.gh.readme;
+  $('#sMemNote').value = draft.gh.note || '';
+  himLabels(draft.hisName || '小克');
   sKey.type = 'password'; $('#btnShowKey').textContent = '显示';
+  $('#sToken').type = 'password'; $('#btnShowToken').textContent = '显示';
   $('#settingsWrap').hidden = false;
 }
 function closeSettings() { $('#settingsWrap').hidden = true; draft = null; }
+function stashGh() {
+  if (!draft) return;
+  draft.gh.repo = $('#sRepo').value.trim();
+  draft.gh.token = $('#sToken').value.trim();
+  draft.gh.on = $('#sMemOn').checked;
+  draft.gh.readme = $('#sReadme').checked;
+  draft.gh.note = $('#sMemNote').value;
+}
 function saveSettings() {
-  stashProvider();
+  stashProvider(); stashGh();
   const d = draft;
   if (d.provider === 'custom' && d.baseUrl && !/^https?:\/\//.test(d.baseUrl)) { toast('接口地址要以 http:// 或 https:// 开头'); return; }
   const t = $('#sTemp').value.trim();
@@ -1086,8 +1816,10 @@ function saveSettings() {
   d.hisName = $('#sHim').value.trim() || '小克';
   d.theme = $('#sTheme').value;
   d.enterSend = $('#sEnter').value;
+  const repoChanged = (S.settings.gh.repo || '') !== d.gh.repo || (S.settings.gh.token || '') !== d.gh.token;
   S.settings = d;
-  if (!lsSet(LS_SETTINGS, JSON.stringify(d))) toast('设置没存上，这个浏览器不让本地存储');
+  if (repoChanged) { GH.branchCache = null; Mem.tree = null; Mem.commits = null; S.convs.forEach(c => { if (c.memoFailed) delete c.memoFailed; }); }
+  if (!persistSettings()) toast('设置没存上，这个浏览器不让本地存储');
   else toast('保存好了');
   closeSettings();
   applyTheme();
@@ -1117,9 +1849,9 @@ function download(name, text, type) {
   document.body.append(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
-const stamp = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`; };
+const stamp = () => { const d = new Date(); return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`; };
 function exportAll() {
-  const data = { app: 'chuangbian', version: 1, exported: new Date().toISOString(), conversations: S.convs.map(c => ({ ...c, messages: c.messages.map(m => { const x = { ...m }; delete x.pending; return x; }) })) };
+  const data = { app: 'chuangbian', version: 2, exported: new Date().toISOString(), conversations: S.convs.map(c => ({ ...c, messages: c.messages.map(m => { const x = { ...m }; delete x.pending; return x; }) })) };
   download(`窗边备份-${stamp()}.json`, JSON.stringify(data, null, 2), 'application/json');
 }
 function exportMd() {
@@ -1129,12 +1861,29 @@ function exportMd() {
   for (const m of c.messages) {
     if (m.local) continue;
     const who = m.role === 'user' ? n.me : n.him;
-    out += `**${who}** · ${new Date(m.ts).toLocaleString('zh-CN', { hour12: false })}\n\n`;
+    out += `**${who}** · ${fmtFull(m.ts)}\n\n`;
     if ((m.images || []).length) out += `[图片 ×${m.images.length}]\n\n`;
+    (m.files || []).forEach(f => { out += `[文件] ${f.name}\n\n`; });
+    (m.parts || []).forEach(p => {
+      if (p.type === 'tool') { const l = toolLabel({ ...p, status: 'done' }); out += `> ${l.verb} ${l.obj}\n\n`; }
+      if (p.type === 'search') out += `> 搜了「${p.query || ''}」\n\n`;
+    });
     out += (m.content || '') + '\n\n';
   }
   const safe = (c.title || '窗口').replace(/[\\/:*?"<>|]/g, '_').slice(0, 40);
   download(`${safe}-${stamp()}.md`, out, 'text/markdown');
+}
+const PART_TYPES = new Set(['text', 'tool', 'search', 'fetch', 'sources', 'note']);
+function cleanMsg(m) {
+  const x = { id: typeof m.id === 'string' ? m.id : uid(), role: m.role, content: String(m.content || ''), ts: +m.ts || Date.now() };
+  if (Array.isArray(m.images)) x.images = m.images.filter(u => typeof u === 'string' && u.startsWith('data:image/'));
+  if (Array.isArray(m.files)) x.files = m.files.filter(f => f && (f.kind === 'pdf' && typeof f.data === 'string' && f.data.startsWith('data:application/pdf') || f.kind === 'text' && typeof f.text === 'string'))
+    .map(f => ({ kind: f.kind, name: String(f.name || '文件'), size: +f.size || 0, ...(f.kind === 'pdf' ? { data: f.data } : { text: f.text }) }));
+  if (Array.isArray(m.parts)) x.parts = m.parts.filter(p => p && PART_TYPES.has(p.type)).map(p => JSON.parse(JSON.stringify(p)));
+  if (Array.isArray(m.trail)) x.trail = m.trail.filter(r => r && typeof r === 'object').map(r => ({ text: String(r.text || ''), calls: Array.isArray(r.calls) ? r.calls.map(c => ({ id: String(c.id), name: String(c.name), input: c.input && typeof c.input === 'object' ? c.input : {} })) : [], results: Array.isArray(r.results) ? r.results.map(z => ({ id: String(z.id), content: String(z.content || ''), isError: !!z.isError })) : [] }));
+  ['local', 'stopped', 'truncated'].forEach(k => { if (m[k]) x[k] = true; });
+  ['error', 'model', 'note'].forEach(k => { if (m[k]) x[k] = String(m[k]); });
+  return x;
 }
 async function importFile(file) {
   let data;
@@ -1147,11 +1896,7 @@ async function importFile(file) {
     const clean = {
       id: c.id, no: +c.no || 0, title: String(c.title || '导入的窗口').slice(0, 60),
       created: +c.created || Date.now(), updated: +c.updated || Date.now(),
-      messages: c.messages.filter(m => m && (m.role === 'user' || m.role === 'assistant')).map(m => ({
-        id: typeof m.id === 'string' ? m.id : uid(), role: m.role, content: String(m.content || ''), ts: +m.ts || Date.now(),
-        ...(Array.isArray(m.images) ? { images: m.images.filter(u => typeof u === 'string' && u.startsWith('data:image/')) } : {}),
-        ...(m.local ? { local: true } : {}), ...(m.error ? { error: String(m.error) } : {}), ...(m.model ? { model: String(m.model) } : {})
-      }))
+      messages: c.messages.filter(m => m && (m.role === 'user' || m.role === 'assistant')).map(cleanMsg)
     };
     const i = S.convs.findIndex(x => x.id === clean.id);
     if (i >= 0) { if ((clean.updated || 0) <= (S.convs[i].updated || 0)) continue; S.convs[i] = clean; }
@@ -1191,12 +1936,19 @@ input.addEventListener('keydown', e => {
 });
 input.addEventListener('paste', e => {
   const files = e.clipboardData && e.clipboardData.files;
-  if (files && files.length) { const imgs = [...files].filter(f => f.type.startsWith('image/')); if (imgs.length) { e.preventDefault(); addImages(imgs); } }
+  if (files && files.length) { e.preventDefault(); addFiles(files); }
 });
 btnSend.addEventListener('click', () => { if (S.streaming) S.streaming.controller.abort(); else send(); });
 $('#btnAttach').addEventListener('click', () => $('#fileInput').click());
-$('#fileInput').addEventListener('change', e => { addImages(e.target.files); e.target.value = ''; });
-$('#thumbs').addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (!b) return; S.pendingImages.splice(+b.dataset.i, 1); renderThumbs(); });
+$('#fileInput').addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
+$('#pending').addEventListener('click', e => { const b = e.target.closest('button[data-rm]'); if (!b) return; S.pending.splice(+b.dataset.rm, 1); renderPending(); });
+$('#btnWeb').addEventListener('click', () => {
+  S.settings.web = !S.settings.web; persistSettings(); renderHeader();
+  const him = names().him, p = S.settings.provider;
+  if (!S.settings.web) toast('联网关了');
+  else if (p === 'custom') toast(`联网开了。中转一般没有搜索，${him}只能看你发的链接`, 3200);
+  else toast(`联网开了，${him}可以搜索、看网页`);
+});
 
 thread.addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
@@ -1221,6 +1973,7 @@ $('#btnNew').addEventListener('click', () => {
   if (c && !c.messages.length) { closeDrawer(); input.focus(); return; }
   newConv(); closeDrawer(); renderAll(); input.focus();
 });
+$('#btnMemory').addEventListener('click', openMemory);
 $('#convList').addEventListener('click', e => {
   const open = e.target.closest('button.open');
   if (open) { setCurrent(open.dataset.id); closeDrawer(); renderAll(); return; }
@@ -1238,11 +1991,38 @@ $('#btnExportAll').addEventListener('click', exportAll);
 $('#btnExportMd').addEventListener('click', exportMd);
 $('#importInput').addEventListener('change', e => { const f = e.target.files[0]; if (f) importFile(f); e.target.value = ''; });
 
+$('#memBody').addEventListener('click', e => {
+  const f = e.target.closest('button.mem-file'); if (f) { openMemFile(f.dataset.path); return; }
+  const b = e.target.closest('button[data-mem]'); if (!b) return;
+  if (b.dataset.mem === 'back') { Mem.view = null; renderMem(); }
+  if (b.dataset.mem === 'settings') openSettings();
+});
+$('#btnMemRefresh').addEventListener('click', () => { if (Mem.view && Mem.view.path) openMemFile(Mem.view.path); else loadMem(true); });
+$('#btnMemClose').addEventListener('click', closeMemory);
+$('#memWrap').addEventListener('click', e => { if (e.target === e.currentTarget) closeMemory(); });
+
 document.querySelectorAll('input[name="provider"]').forEach(r => r.addEventListener('change', () => {
   if (!draft || !r.checked) return;
   stashProvider(); draft.provider = r.value; fillProvider();
 }));
 $('#btnShowKey').addEventListener('click', () => { const show = sKey.type === 'password'; sKey.type = show ? 'text' : 'password'; $('#btnShowKey').textContent = show ? '隐藏' : '显示'; });
+$('#btnShowToken').addEventListener('click', () => { const t = $('#sToken'); const show = t.type === 'password'; t.type = show ? 'text' : 'password'; $('#btnShowToken').textContent = show ? '隐藏' : '显示'; });
+$('#btnTestGh').addEventListener('click', async () => {
+  if (!draft) return;
+  stashGh();
+  const btn = $('#btnTestGh');
+  const saved = S.settings.gh, savedCache = GH.branchCache;
+  S.settings.gh = draft.gh; GH.branchCache = null;
+  if (!GH.ready()) { toast('先填仓库名（用户名/仓库名）和 token'); S.settings.gh = saved; GH.branchCache = savedCache; return; }
+  btn.disabled = true; btn.textContent = '连接中…';
+  try {
+    const tree = await GH.tree();
+    const perms = GH.branchCache && GH.branchCache.perms;
+    if (perms && perms.push === false) toast(`连上了，有 ${tree.length} 个文件。不过这个 token 只能读不能写，Contents 要改成 Read and write`, 4500);
+    else toast(`连上了，仓库里有 ${tree.length} 个文件`, 3000);
+  } catch (e) { toast(ghFriendly(e), 4000); }
+  finally { S.settings.gh = saved; GH.branchCache = null; btn.disabled = false; btn.textContent = '测试连接'; }
+});
 $('#btnFetchModels').addEventListener('click', async () => {
   if (!draft) return;
   stashProvider();
@@ -1258,7 +2038,7 @@ $('#btnFetchModels').addEventListener('click', async () => {
   finally { btn.disabled = false; btn.textContent = '获取模型列表'; }
 });
 sModelSelect.addEventListener('change', () => { if (sModelSelect.value) sModel.value = sModelSelect.value; });
-$('#sHim').addEventListener('input', e => { $('#timeLabel').textContent = `告诉${e.target.value.trim() || '小克'}现在几点`; });
+$('#sHim').addEventListener('input', e => himLabels(e.target.value.trim() || '小克'));
 $('#btnCancelSettings').addEventListener('click', closeSettings);
 $('#btnSaveSettings').addEventListener('click', saveSettings);
 $('#settingsWrap').addEventListener('click', e => { if (e.target === e.currentTarget) closeSettings(); });
@@ -1269,6 +2049,7 @@ $('#renameWrap').addEventListener('click', e => { if (e.target === e.currentTarg
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   if (!$('#settingsWrap').hidden) closeSettings();
+  else if (!$('#memWrap').hidden) closeMemory();
   else if (!$('#renameWrap').hidden) $('#renameWrap').hidden = true;
   else if (drawer.classList.contains('open')) closeDrawer();
 });
@@ -1279,13 +2060,16 @@ async function init() {
   applyTheme();
   const firstRun = lsGet(LS_SETTINGS) === null;
   S.convs = (await Store.all()).filter(c => c && c.id && Array.isArray(c.messages));
-  for (const c of S.convs) for (const m of c.messages) if (m.pending) { m.pending = false; m.stopped = true; }
+  for (const c of S.convs) for (const m of c.messages) {
+    if (m.pending) { m.pending = false; m.stopped = true; }
+    (m.parts || []).forEach(p => { if (p.status === 'running') { p.status = 'error'; p.error = '没跑完'; } });
+  }
   if (!S.convs.length && firstRun) seedGuide();
   const saved = lsGet(LS_CURRENT);
   if (saved && S.convs.some(c => c.id === saved)) S.cur = saved;
   else { const first = sortedConvs()[0]; S.cur = first ? first.id : null; }
   if (!S.cur) newConv();
-  if (firstRun) lsSet(LS_SETTINGS, JSON.stringify(S.settings));
+  if (firstRun) persistSettings();
   renderAll();
 }
 init();
